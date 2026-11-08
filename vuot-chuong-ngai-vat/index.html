@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vượt chướng ngại vật – Đối ngoại thời kỳ đổi mới</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Bỏ qua đến nội dung chính</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Vượt chướng ngại vật</span>
+    </div>
+    <p class="topbar-topic" id="topbar-topic"></p>
+    <button id="btn-restart" class="btn btn-ghost btn-sm" type="button" hidden>
+      Ván mới <kbd>R</kbd>
+    </button>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- ============ MÀN HÌNH THIẾT LẬP ============ -->
+    <section id="screen-setup" class="screen screen-setup" aria-labelledby="setup-title">
+      <div class="setup-card">
+        <p class="eyebrow">Mini game · Vòng thi đội</p>
+        <h1 id="setup-title" class="setup-title">Vượt chướng ngại vật</h1>
+        <p class="lead">Chủ đề: <strong id="setup-topic"></strong></p>
+
+        <div class="setup-grid">
+          <section class="panel rules" aria-labelledby="rules-title">
+            <h2 id="rules-title" class="panel-title">Luật chơi</h2>
+            <ol id="rules-list" class="rules-list"></ol>
+          </section>
+
+          <section class="panel teams-setup" aria-labelledby="teams-title">
+            <h2 id="teams-title" class="panel-title">Các đội chơi</h2>
+            <div class="stepper" role="group" aria-label="Số đội chơi">
+              <button id="btn-team-minus" class="btn btn-icon" type="button" aria-label="Bớt một đội">−</button>
+              <output id="team-count" class="stepper-value" aria-live="polite">4</output>
+              <span class="stepper-unit">đội</span>
+              <button id="btn-team-plus" class="btn btn-icon" type="button" aria-label="Thêm một đội">+</button>
+            </div>
+            <div id="team-inputs" class="team-inputs"></div>
+          </section>
+        </div>
+
+        <div class="setup-actions">
+          <button id="btn-start" class="btn btn-primary btn-lg" type="button">BẮT ĐẦU</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MÀN HÌNH CHƠI ============ -->
+    <section id="screen-board" class="screen screen-board" aria-label="Bảng thi" hidden>
+      <div class="board-layout">
+        <div class="board-main">
+          <!-- Chướng ngại vật -->
+          <!-- Thanh chướng ngại vật + điều khiển (dính trên đầu khi cuộn) -->
+          <section id="cnv-panel" class="cnv-panel" aria-labelledby="cnv-title">
+            <div class="cnv-head">
+              <h2 id="cnv-title" class="cnv-title">Chướng ngại vật</h2>
+              <p class="cnv-meta" id="cnv-meta"></p>
+            </div>
+            <div id="cnv-letters" class="cnv-letters"></div>
+            <div class="cnv-value" aria-live="polite">
+              <span class="cnv-value-label" id="cnv-value-label">Giá trị hiện tại</span>
+              <span class="cnv-value-num"><strong id="cnv-value">50</strong> điểm</span>
+            </div>
+            <p id="cnv-status" class="cnv-status"></p>
+            <div class="cnv-actions">
+              <button id="btn-cnv" class="btn btn-host" type="button">GIẢI CNV <kbd>C</kbd></button>
+              <button id="btn-board-primary" class="btn btn-primary" type="button"></button>
+            </div>
+          </section>
+
+          <!-- Danh sách hàng ngang + gợi ý -->
+          <section id="rows-view" class="rows-view" aria-labelledby="rows-title">
+            <div class="section-head">
+              <h2 id="rows-title" class="section-title">Hàng ngang &amp; gợi ý</h2>
+              <p class="section-sub" id="hints-progress"></p>
+            </div>
+            <ol id="rows-list" class="rows-list"></ol>
+          </section>
+
+          <!-- Câu hỏi đang chơi -->
+          <section id="question-view" class="question-view" aria-labelledby="q-text" hidden>
+            <div class="q-top">
+              <span id="q-label" class="q-label"></span>
+              <span id="q-difficulty" class="chip"></span>
+              <span id="q-points" class="chip chip-points"></span>
+            </div>
+            <h2 id="q-text" class="q-text"></h2>
+
+            <div class="timer" id="timer">
+              <div class="timer-track" aria-hidden="true"><span id="timer-fill" class="timer-fill"></span></div>
+              <span id="timer-num" class="timer-num" role="timer" aria-live="off">15</span>
+              <button id="btn-timer" class="btn btn-ghost btn-sm" type="button">Bắt đầu <kbd>T</kbd></button>
+            </div>
+
+            <div id="q-reveal" class="q-reveal" hidden></div>
+
+            <div id="q-judge" class="q-judge" hidden>
+              <p class="judge-title" id="judge-title">Chọn các nhóm trả lời đúng <span class="muted">(phím số = số nhóm, Nhóm 10 = phím 0)</span></p>
+              <div id="judge-teams" class="judge-teams" role="group" aria-labelledby="judge-title"></div>
+              <p id="judge-summary" class="judge-summary"></p>
+            </div>
+
+            <div class="q-actions">
+              <button id="btn-q-back" class="btn btn-ghost" type="button">← Quay lại bảng</button>
+              <button id="btn-q-primary" class="btn btn-primary btn-lg" type="button"></button>
+            </div>
+          </section>
+        </div>
+
+        <aside class="sidebar" aria-labelledby="score-title">
+          <h2 id="score-title" class="section-title">Bảng điểm</h2>
+          <ol id="scoreboard" class="scoreboard"></ol>
+          <p class="sidebar-note">Nút −/+ dùng để chỉnh điểm thủ công (bước 5).</p>
+          <details class="shortcuts">
+            <summary>Phím tắt</summary>
+            <dl>
+              <dt><kbd>Enter</kbd></dt><dd>Nút chính đang hiện</dd>
+              <dt><kbd>T</kbd></dt><dd>Bắt đầu / dừng đồng hồ</dd>
+              <dt><kbd>0</kbd>–<kbd>9</kbd></dt><dd>Chọn nhóm theo số (Nhóm 10 = <kbd>0</kbd>)</dd>
+              <dt><kbd>C</kbd></dt><dd>Giải chướng ngại vật</dd>
+              <dt><kbd>R</kbd></dt><dd>Ván mới</dd>
+              <dt><kbd>Esc</kbd></dt><dd>Đóng hộp thoại</dd>
+            </dl>
+          </details>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ MÀN HÌNH KẾT QUẢ ============ -->
+    <section id="screen-results" class="screen screen-results" aria-labelledby="results-title" hidden>
+      <div class="results-card">
+        <p class="eyebrow">Kết thúc vòng thi</p>
+        <h1 id="results-title" class="setup-title">Kết quả</h1>
+        <div id="results-cnv" class="results-cnv"></div>
+        <ol id="results-ranking" class="ranking"></ol>
+        <div class="results-actions">
+          <button id="btn-review" class="btn btn-ghost" type="button" aria-expanded="false" aria-controls="review">Xem lại đáp án</button>
+          <button id="btn-replay" class="btn btn-primary" type="button">Chơi lại (giữ đội)</button>
+          <button id="btn-new-setup" class="btn btn-ghost" type="button">Thiết lập đội mới</button>
+        </div>
+        <section id="review" class="review" aria-label="Xem lại đáp án" hidden></section>
+      </div>
+    </section>
+  </main>
+
+  <!-- Thông báo cho trình đọc màn hình -->
+  <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ============ HỘP THOẠI GIẢI CNV ============ -->
+  <dialog id="dlg-cnv" class="dialog" aria-labelledby="dlg-cnv-title">
+    <h2 id="dlg-cnv-title" class="dialog-title">Giải chướng ngại vật</h2>
+    <p id="dlg-cnv-info" class="dialog-info"></p>
+    <div id="dlg-cnv-pick">
+      <p class="dialog-step">Nhóm nào xin giải? <span class="muted">(phím số = số nhóm, Nhóm 10 = phím 0)</span></p>
+      <div id="dlg-cnv-teams" class="dialog-teams"></div>
+    </div>
+    <div id="dlg-cnv-judge" hidden>
+      <p class="dialog-step" id="dlg-cnv-judge-text"></p>
+      <div class="dialog-actions">
+        <button id="btn-cnv-wrong" class="btn btn-wrong" type="button">✕ SAI</button>
+        <button id="btn-cnv-right" class="btn btn-right" type="button">✓ ĐÚNG</button>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button id="btn-cnv-cancel" class="btn btn-ghost btn-sm" type="button">Hủy <kbd>Esc</kbd></button>
+    </div>
+  </dialog>
+
+  <!-- ============ HỘP THOẠI VÁN MỚI ============ -->
+  <dialog id="dlg-restart" class="dialog" aria-labelledby="dlg-restart-title">
+    <h2 id="dlg-restart-title" class="dialog-title">Bắt đầu ván mới?</h2>
+    <p class="dialog-info">Toàn bộ điểm và tiến trình của ván hiện tại sẽ bị xóa.</p>
+    <div class="dialog-actions dialog-actions-wrap">
+      <button id="btn-restart-cancel" class="btn btn-ghost" type="button">Hủy</button>
+      <button id="btn-restart-setup" class="btn btn-ghost" type="button">Thiết lập đội mới</button>
+      <button id="btn-restart-keep" class="btn btn-primary" type="button">Ván mới (giữ đội)</button>
+    </div>
+  </dialog>
+
+  <script src="js/questions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
